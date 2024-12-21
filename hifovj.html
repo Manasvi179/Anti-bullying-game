@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anti-Bullying Game</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url('https://www.transparenttextures.com/patterns/white-mesh.png');
+            background-size: cover;
+        }
+
+        #gameContainer {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #4CAF50;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1.2em;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        #answers {
+            margin-top: 20px;
+        }
+
+        .answerButton {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 18px;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .answerButton:hover {
+            background-color: #45a049;
+        }
+
+        #score {
+            margin-top: 30px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        #feedback {
+            font-size: 1.2em;
+            margin-top: 20px;
+            color: #444;
+            font-style: italic;
+        }
+
+        .feedbackCorrect {
+            color: #4CAF50;
+        }
+
+        .feedbackIncorrect {
+            color: #f44336;
+        }
+
+        .endMessage {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+            margin-top: 30px;
+        }
+
+        .buttonWrapper {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="gameContainer">
+        <h1>Anti-Bullying Game</h1>
+        <p>Choose the right response to stop bullying!</p>
+        
+        <div id="question"></div>
+        <div id="answers" class="buttonWrapper">
+            <button class="answerButton" onclick="checkAnswer('response1')">Answer 1</button>
+            <button class="answerButton" onclick="checkAnswer('response2')">Answer 2</button>
+            <button class="answerButton" onclick="checkAnswer('response3')">Answer 3</button>
+        </div>
+        
+        <div id="feedback"></div>
+        <div id="score">Score: 0</div>
+    </div>
+
+    <script>
+        let score = 0;
+
+        const questions = [
+            {
+                question: "You see a friend being teased at school. What do you do?",
+                answers: {
+                    response1: "Laugh along with the bullies.",
+                    response2: "Step in and tell the bullies to stop.",
+                    response3: "Ignore it and walk away."
+                },
+                correctAnswer: "response2"
+            },
+            {
+                question: "A student is making fun of someone's appearance. What do you say?",
+                answers: {
+                    response1: "That's not nice, everyone is unique.",
+                    response2: "Join in and make fun of them too.",
+                    response3: "Ignore them and say nothing."
+                },
+                correctAnswer: "response1"
+            },
+            {
+                question: "Someone is being excluded from a group. How do you help?",
+                answers: {
+                    response1: "Tell them to find another group.",
+                    response2: "Invite them to join your group.",
+                    response3: "Watch without saying anything."
+                },
+                correctAnswer: "response2"
+            },
+            {
+                question: "A student is sitting alone at lunch. What should you do?",
+                answers: {
+                    response1: "Ignore them and sit with your friends.",
+                    response2: "Ask them to sit with you and your friends.",
+                    response3: "Tell them to go back home."
+                },
+                correctAnswer: "response2"
+            },
+            {
+                question: "You overhear someone being cyberbullied online. What is your reaction?",
+                answers: {
+                    response1: "Laugh at the comments and move on.",
+                    response2: "Report the bullying and support the victim.",
+                    response3: "Do nothing and continue browsing."
+                },
+                correctAnswer: "response2"
+            },
+            {
+                question: "A peer is being teased for being different. How do you respond?",
+                answers: {
+                    response1: "Tease them back.",
+                    response2: "Speak up and defend their differences.",
+                    response3: "Ignore it and walk away."
+                },
+                correctAnswer: "response2"
+            },
+            {
+                question: "A student has just been made fun of in class. What do you do?",
+                answers: {
+                    response1: "Laugh and join in with the jokes.",
+                    response2: "Check on the student and let them know they are not alone.",
+                    response3: "Ignore the situation and say nothing."
+                },
+                correctAnswer: "response2"
+            },
+            {
+                question: "You notice someone being bullied in the hallway. How do you respond?",
+                answers: {
+                    response1: "Record the bullying on your phone.",
+                    response2: "Confront the bullies and tell them to stop.",
+                    response3: "Walk away and avoid getting involved."
+                },
+                correctAnswer: "response2"
+            },
+            {
+                question: "You see a post online where someone is being bullied. What do you do?",
+                answers: {
+                    response1: "Like the post to show support.",
+                    response2: "Share it to make the bullying worse.",
+                    response3: "Report the post and offer support to the victim."
+                },
+                correctAnswer: "response3"
+            },
+            {
+                question: "A friend tells you about their experience of being bullied. What do you say?",
+                answers: {
+                    response1: "Ignore them and tell them to deal with it.",
+                    response2: "Listen to them, show empathy, and encourage them to talk to someone they trust.",
+                    response3: "Tell them to ignore it and move on."
+                },
+                correctAnswer: "response2"
+            },
+            {
+                question: "Someone is being bullied at your school. What do you do?",
+                answers: {
+                    response1: "Support the victim and speak to a teacher or counselor.",
+                    response2: "Join the bullies because it’s easier.",
+                    response3: "Stay silent and do nothing."
+                },
+                correctAnswer: "response1"
+            },
+            {
+                question: "A peer is being excluded from a team during sports. How do you react?",
+                answers: {
+                    response1: "Join in with the exclusion.",
+                    response2: "Encourage the team to include them and offer support.",
+                    response3: "Ignore the situation and do nothing."
+                },
+                correctAnswer: "response2"
+            },
+            {
+                question: "You see a new student being ignored by others in your class. What do you do?",
+                answers: {
+                    response1: "Ignore them too.",
+                    response2: "Introduce yourself and make them feel welcome.",
+                    response3: "Tell them to join a different group."
+                },
+                correctAnswer: "response2"
+            },
+            {
+                question: "A group of students are teasing someone about their hobbies. What do you do?",
+                answers: {
+                    response1: "Laugh along and join in.",
+                    response2: "Tell them it's okay to have different interests.",
+                    response3: "Ignore the situation and walk away."
+                },
+                correctAnswer: "response2"
+            },
+            {
+                question: "A student is being humiliated in front of the class. What should you do?",
+                answers: {
+                    response1: "Laugh and make the situation worse.",
+                    response2: "Speak out and tell everyone that bullying is not acceptable.",
+                    response3: "Do nothing and stay quiet."
+                },
+                correctAnswer: "response2"
+            },
+            {
+                question: "You notice a friend being verbally bullied online. What do you do?",
+                answers: {
+                    response1: "Ignore the situation.",
+                    response2: "Support your friend and tell the bully to stop.",
+                    response3: "Encourage your friend to block the bully."
+                },
+                correctAnswer: "response2"
+            },
+            {
+                question: "A peer is being laughed at for their accent. How do you respond?",
+                answers: {
+                    response1: "Laugh with everyone else.",
+                    response2: "Stand up for them and tell everyone that accents are part of our identity.",
+                    response3: "Ignore the situation and keep quiet."
+                },
+                correctAnswer: "response2"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+
+        function loadQuestion() {
+            const currentQuestion = questions[currentQuestionIndex];
+            document.getElementById("question").innerHTML = currentQuestion.question;
+            const answers = currentQuestion.answers;
+
+            const buttons = document.querySelectorAll('.answerButton');
+            buttons.forEach((button, index) => {
+                const responseKey = `response${index + 1}`;
+                button.innerHTML = answers[responseKey];
+            });
+        }
+
+        function checkAnswer(selectedAnswer) {
+            const currentQuestion = questions[currentQuestionIndex];
+            if (selectedAnswer === currentQuestion.correctAnswer) {
+                score++;
+                document.getElementById("feedback").innerHTML = "<span class='feedbackCorrect'>Correct! Well done for standing up against bullying!</span>";
+            } else {
+                document.getElementById("feedback").innerHTML = "<span class='feedbackIncorrect'>Incorrect. Let's try to be more supportive next time!</span>";
+            }
+            document.getElementById("score").innerHTML = `Score: ${score}`;
+
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                setTimeout(loadQuestion, 1000);
+            } else {
+                setTimeout(() => {
+                    document.getElementById("question").innerHTML = '<span class="endMessage">Thank you for playing and promoting kindness!</span>';
+                    document.getElementById("feedback").innerHTML = '';
+                    document.getElementById("score").innerHTML = '';
+                }, 1000);
+            }
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
+
+
